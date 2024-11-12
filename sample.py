@@ -17,7 +17,7 @@ df_test = pd.read_csv('sample/csv/test.csv')
 #print(df_train.describe())
 
 #欠損している項目の確認
-df_train.isnull().sum()
+#df_train.isnull().sum()
 
 #欠損値のある項目を削除（行or列）
 #df_train = df_train.dropna(axis=1)
@@ -49,6 +49,15 @@ df_train.isnull().sum()
 #plt.bar(x=np.array(['female','male']), height=df_survived_1)
 #plt.show()
 
+#性別を数値（0,1,2,3）に変更　⇨ map関数を使う　
+'''map関数後でちゃんとインプットする'''
+
+df_train['Sex'] = df_train['Sex'].map({'male':0 , 'female':1})
+print(df_train.head())
+
+
+'''
+#x,yに代入
 x = df_train[['Pclass','SibSp','Parch']]
 y = df_train['Survived']
 
@@ -70,3 +79,5 @@ submit['Survived'] = knn.predict(x_for_submit)
 
 #CSVファイルとして格納
 submit.to_csv('sample/csv/submit01.csv' , index=False)
+
+'''
