@@ -55,7 +55,6 @@ df_test = pd.read_csv('sample/csv/test.csv')
 df_train['Sex'] = df_train['Sex'].map({'male':0 , 'female':1})
 print(df_train.head())
 
-
 '''
 #x,yに代入
 x = df_train[['Pclass','SibSp','Parch']]
@@ -79,5 +78,7 @@ submit['Survived'] = knn.predict(x_for_submit)
 
 #CSVファイルとして格納
 submit.to_csv('sample/csv/submit01.csv' , index=False)
+
+#ファイル変更
 
 '''
