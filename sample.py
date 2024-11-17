@@ -17,10 +17,11 @@ df_test = pd.read_csv('sample/csv/test.csv')
 #print(df_train.describe())
 
 #欠損している項目の確認
-#df_train.isnull().sum()
+#confirm = df_train.isnull().sum()
+#print(confirm)
 
 #欠損値のある項目を削除（行or列）
-#df_train = df_train.dropna(axis=1)
+#df_train = df_train.dropna(axis=0)
 #print(df_train.head())
 
 #生存者・死亡者数（ヒストグラム）
@@ -53,7 +54,9 @@ df_test = pd.read_csv('sample/csv/test.csv')
 '''map関数後でちゃんとインプットする'''
 
 df_train['Sex'] = df_train['Sex'].map({'male':0 , 'female':1})
-print(df_train.head())
+df_test['Sex'] = df_test['Sex'].map({'male':0 , 'female':1})
+
+#print(df_train.head())
 
 '''
 #x,yに代入
@@ -79,6 +82,25 @@ submit['Survived'] = knn.predict(x_for_submit)
 #CSVファイルとして格納
 submit.to_csv('sample/csv/submit01.csv' , index=False)
 
-#ファイル変更
+'''
 
+#Sex,SibSp（兄弟、配偶者の乗船数）,Parch（親、子供の乗船数）,Ageを使う
+x = df_train[['Sex','Pclass','SibSp','Parch']]
+y = df_train['Survived']
+
+x_train,x_test,y_train,y_test = train_test_split(x,y,random_state=0)
+
+'''knnのデータ予測（スコアの出し方）に関して調べる'''
+knn = KNeighborsClassifier()
+
+knn.fit(x_train,y_train)
+
+print(knn.score(x_test,y_test))
+
+'''
+x_for_submit = df_test[['Sex','Pclass','SibSp','Parch']]
+submit = df_test[['PassengerId']]
+submit['Survived'] = knn.predict(x_for_submit)
+
+submit.to_csv('sample/csv/update_sex.csv' , index=False)
 '''
