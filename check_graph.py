@@ -7,17 +7,19 @@ df_train = pd.read_csv('sample/csv/train.csv')
 df_test = pd.read_csv('sample/csv/test.csv')
 
 #欠損データを確認
-confirm = df_train.isnull().sum()
+confirm_train = df_train.isnull().sum()
 
 '''Age（177）、Cabin（687）、Embarked(2)に欠損'''
 
 #Cabinを削除
-df_train = df_train.drop('Cabin',axis=1)
+#df_train = df_train.drop('Cabin',axis=1)
 
-#Ageの中央値を出す　⇨ Ageを予測して出す？
+#Ageの中央値を出す　
+
 median_age = np.nanmedian(df_train['Age'])
+#NaNを除いた中央値「28.0」
 
-'''NaNを除いた中央値「28.0」'''
+'''Ageを予測して出す'''
 
 #算出した中央値をAgeの欠損部（NaN）に代入
 df_train['Age'] = df_train['Age'].fillna(median_age)
@@ -61,13 +63,33 @@ df_train['Embarked'] = df_train['Embarked'].fillna("C")
 #Name（苗字部分）、Fare、（Embarked、）SibSp、Parchから夫婦、兄弟を判別する
 #一緒に来てる人をグループ（Family_Group）化する
 
+# 姓を抽出
+df_train['LastName'] = df_train['Name'].str.extract(r'([^,]+),')
+
+#SibSpとParchを足した合計数を抽出
+df_train['Family_Number_Sum'] = df_train['SibSp'] + df_train['Parch']
+
+# グループ化キーを作成（姓 + 運賃 + 乗船場所 + チケット番号）
+df_train['GroupKey'] = df_train['LastName'] + "_" + df_train['Family_Number_Sum'].astype(str) 
+
+# グループIDを付与
+df_train['GroupID'] = df_train.groupby('GroupKey').ngroup()
 
 #チケット番号(Ticket)を確認する
+#CabinをPclass、GroupID、Fare、Embarkedから予測する
+'''一旦Cabinは使わずにいく'''
 
-#CabinをPclass、Ticket、Family_Group、Fare、Embarkedから予測する
-'''※推測：一緒に来ている人たちは同じチケット番号で同一のCabin'''
+#FareとCabinのグラフを抽出
 
 
-#Pclass、Sex、Name（敬称）、Age、SibSp、Parchと生存者の相関を見る
+#Pclass、Sex、Name（敬称）、Age、SibSp、Parch、Family＿Number＿Sumと生存者の相関を見る
 
+# 必要な列のみをデータフレーム化
+df_grouped = df_train[['Survived','Title', 'Pclass', 'Fare','Sex', 'Age', 'SibSp', 'Parch', 'Family_Number_Sum','GroupID']]
+
+# 結果をCSVに保存
+df_grouped.to_csv("check_correlation_2.csv", index=False)
+
+#負の相関が出ているカラムは除外する
 #使うデータを決定する
+#RandomForestモデルで予測する

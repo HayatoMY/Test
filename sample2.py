@@ -29,7 +29,7 @@ title_map = {
 df_train['Title'] = df_train['Title'].map(title_map).fillna(0)
 df_test['Title'] = df_test['Title'].map(title_map).fillna(0)
 
-x = df_train[['Sex','Pclass','SibSp','Parch','Title']]
+x = df_train[['Sex','Pclass','SibSp','Parch','Title','Fare']]
 y = df_train['Survived']
 
 # トレーニングデータとテストデータに分割
